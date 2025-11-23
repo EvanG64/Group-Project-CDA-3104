@@ -168,62 +168,56 @@ my new stuff
 
 
 n_green_w_red:
-          sbi       GREEN_N_PIN                   ; turn green north on
-          sbi       RED_W_PIN                     ; turn red west on
-          cbi       RED_N_PIN                     ; turn red north off
-          cbi       YELLOW_N_PIN                  ; turn yellow north off
-          cbi       YELLOW_W_PIN                  ; turn yellow west off
-          cbi       GREEN_W_PIN                   ; turn green west off
+          sbi       NORTH, GREEN_N_PIN                   ; turn green north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, RED_N_PIN                     ; turn red north off
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
           
-          ret       n_green_w_red                 ; return
+          ret                                      ; return to n_green_w_red
 
 
 n_red_w_green:
-          sbi       RED_N_PIN                     ; turn red north on
-          sbi       GREEN_W_PIN                   ; turn green west on
-          cbi       YELLOW_N_PIN                  ; turn yellow norht off
-          cbi       GREEN_N_PIN                   ; turn green north off
-          cbi       RED_W_PIN                     ;turn red west off
-          cbi       YELLOW_W_PIN                  ; turn yellow west off
+          sbi       NORHT, RED_N_PIN                     ; turn red north on
+          sbi       WEST, GREEN_W_PIN                   ; turn green west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow norht off
+          cbi       NORHT, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, RED_W_PIN                     ;turn red west off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
 
-          ret       n_red_w_green                       ;return
+          ret                                     ;return n_red_w_green
 
 
 n_yellow_w_red:
-          sbi       YELLOW_N_PIN                  ; turn yellow north on
-          sbi       RED_W_PIN                     ; turn red west on
-          cbi       RED_N_PIN                     ; turn red north off
-          cbi       GREEN_N_PIN                   ; turn green north off
-          cbi       YELLOW_W_PIN                  ; turn yellow west off
-          cbi       GREEN_W_PIN                   ; turn green west off
+          sbi       NORTH, YELLOW_N_PIN                  ; turn yellow north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, RED_N_PIN                     ; turn red north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
 
-          ret       n_yellow_w_red
+          ret                                     ; return to n_yellow_w_red
 
 
 
 n_red_w_yellow:
-          sbi       RED_N_PIN                     ; turn red north on
-          sbi       YELLOW_W_PIN                  ; turn yellow west on
-          cbi       YELLOW_N_PIN                  ; turn yellow north off
-          cbi       GREEN_N_PIN                   ; turn green north off
-          cbi       RED_W_PIN                     ; turn red west off
-          cbi       GREEN_W_PIN                   ; turn green west off
+          sbi       NORTH, RED_N_PIN                     ; turn red north on
+          sbi       WEST, YELLOW_W_PIN                  ; turn yellow west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, RED_W_PIN                     ; turn red west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
 
-          ret       n_red_w_yellow
+          ret                                     ; return to n_red_w_yellow
 
 n_red_w_red:
-          sbi       RED_N_PIN                     ; turn red north on
-          sbi       RED_W_PIN                     ; turn red west on
-          cbi       YELLOW_N_PIN                  ; turn yellow north off
-          cbi       GREEN_N_PIN                   ; turn green north off
-          cbi       YELLOW_W_PIN                  ; turn yellow west off
-          cbi       GREEN_W_PIN                   ; turn green west off
+          sbi       NORTH, RED_N_PIN                     ; turn red north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
 
-          ret       n_red_w_red
-
-
-
-
-
-
+          ret                                     ; return to n_red_w_red
 
