@@ -123,7 +123,7 @@ delay:
           clr       r20
           sts       TCCR1A, r20                   ; CTC mode
           ldi       r20, (1 << WGM12) | (1 << CS12) 
-          sts       TCCR1B, r20                   ; Clock Prescaler – setting the clock starts the timer
+          sts       TCCR1B, r20                   ; Clock Prescaler â€“ setting the clock starts the timer
 
           ; Monitor OCF1A flag in TIFR1
 Monitor_OCF1A:
@@ -134,9 +134,10 @@ Monitor_OCF1A:
           clr       r20
           sts       TCCR1B, r20
 
-          ; Clear OCF1A flag – write a 1 to OCF1A bit in TIFR1
+          ; Clear OCF1A flag â€“ write a 1 to OCF1A bit in TIFR1
           ldi       r20, (1 << OCF1A)
           out       TIFR1, r20
+
 
           ; Repeat steps again for multiple timers
            
@@ -157,3 +158,72 @@ btn_cross_n_isr:
           ldi       crossNFlag, 1                   ; incFlag = true
 
           reti                          ; btn_inc_isr
+
+
+
+
+
+; ----------------------------------------------------------
+my new stuff
+
+
+n_green_w_red:
+          sbi       GREEN_N_PIN                   ; turn green north on
+          sbi       RED_W_PIN                     ; turn red west on
+          cbi       RED_N_PIN                     ; turn red north off
+          cbi       YELLOW_N_PIN                  ; turn yellow north off
+          cbi       YELLOW_W_PIN                  ; turn yellow west off
+          cbi       GREEN_W_PIN                   ; turn green west off
+          
+          ret       n_green_w_red                 ; return
+
+
+n_red_w_green:
+          sbi       RED_N_PIN                     ; turn red north on
+          sbi       GREEN_W_PIN                   ; turn green west on
+          cbi       YELLOW_N_PIN                  ; turn yellow norht off
+          cbi       GREEN_N_PIN                   ; turn green north off
+          cbi       RED_W_PIN                     ;turn red west off
+          cbi       YELLOW_W_PIN                  ; turn yellow west off
+
+          ret       n_red_w_green                       ;return
+
+
+n_yellow_w_red:
+          sbi       YELLOW_N_PIN                  ; turn yellow north on
+          sbi       RED_W_PIN                     ; turn red west on
+          cbi       RED_N_PIN                     ; turn red north off
+          cbi       GREEN_N_PIN                   ; turn green north off
+          cbi       YELLOW_W_PIN                  ; turn yellow west off
+          cbi       GREEN_W_PIN                   ; turn green west off
+
+          ret       n_yellow_w_red
+
+
+
+n_red_w_yellow:
+          sbi       RED_N_PIN                     ; turn red north on
+          sbi       YELLOW_W_PIN                  ; turn yellow west on
+          cbi       YELLOW_N_PIN                  ; turn yellow north off
+          cbi       GREEN_N_PIN                   ; turn green north off
+          cbi       RED_W_PIN                     ; turn red west off
+          cbi       GREEN_W_PIN                   ; turn green west off
+
+          ret       n_red_w_yellow
+
+n_red_w_red:
+          sbi       RED_N_PIN                     ; turn red north on
+          sbi       RED_W_PIN                     ; turn red west on
+          cbi       YELLOW_N_PIN                  ; turn yellow north off
+          cbi       GREEN_N_PIN                   ; turn green north off
+          cbi       YELLOW_W_PIN                  ; turn yellow west off
+          cbi       GREEN_W_PIN                   ; turn green west off
+
+          ret       n_red_w_red
+
+
+
+
+
+
+
