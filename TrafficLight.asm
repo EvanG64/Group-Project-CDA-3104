@@ -87,13 +87,60 @@ main:
 
           sei                           ; turn global interrupts on
 
+          ldi       crossWFlag, 0
+          ldi       crossNFlag, 0
+
 main_loop:
 
+; ----------------------------------------------------------
+          ldi       r16, 10
+          call      n_red_w_red
+          call      n_cross_red
+          call      w_cross_red
+          call      delay_lp
+; ----------------------------------------------------------
+          ldi       r16, 30
+          call      n_green_w_red
+          tst       crossWFlag
+          breq      no_w_cross_white_1
+          call      w_cross_white
+no_w_cross_white_1:
+          call      delay_lp
+; ----------------------------------------------------------
+          ldi       r16, 10
+          call      n_yellow_w_red
+          tst       crossWFlag
+          breq      no_w_cross_white_2
+          call      w_cross_white
+no_w_cross_white_2:
+          call      delay_lp
+          ldi       crossWFlag, 0
+; ----------------------------------------------------------
+          ldi       r16, 10
+          call      n_red_w_red
+          call      n_cross_red
+          call      w_cross_red
+          call      delay_lp
+; ----------------------------------------------------------
+          ldi       r16, 30
+          call      n_red_w_green
+          tst       crossNFlag
+          breq      no_n_cross_white_1
+          call      n_cross_white
+no_n_cross_white_1:
+          call      delay_lp
+; ----------------------------------------------------------
+          ldi       r16, 10
+          call      n_red_w_yellow
+          tst       crossNFlag
+          breq      no_n_cross_white_2
+          call      n_cross_white
+no_n_cross_white_2:
+          call      delay_lp
+          ldi       crossNFlag, 0
+; ----------------------------------------------------------
 
-
-
-
-
+         
 
 end_main:
           rjmp main_loop
@@ -101,7 +148,18 @@ end_main:
 
 
 
+; ----------------------------------------------------------
 
+delay_lp:                               ; do {
+          
+
+          call      delay
+
+          dec       r16                 ;   --r16
+          brne      delay_lp            ; } while (r16 > 0);
+
+          
+          ret      
 
 
 
@@ -141,6 +199,91 @@ Monitor_OCF1A:
           ; Repeat steps again for multiple timers
            
           ret                           ; delay
+
+
+
+
+
+
+
+n_cross_red:
+          sbi       NORTH, CROSS_RED_N_PIN
+          cbi       NORTH, CROSS_WHITE_N_PIN
+          ret
+n_cross_white:
+          sbi       NORTH, CROSS_WHITE_N_PIN
+          cbi       NORTH, CROSS_RED_N_PIN
+          ret
+w_cross_red:
+          sbi       WEST, CROSS_RED_W_PIN
+          cbi       WEST, CROSS_WHITE_W_PIN
+          ret
+w_cross_white:
+          sbi       WEST, CROSS_WHITE_W_PIN
+          cbi       WEST, CROSS_RED_W_PIN
+          ret
+
+
+
+
+
+; ----------------------------------------------------------
+
+
+
+n_green_w_red:
+          sbi       NORTH, GREEN_N_PIN                   ; turn green north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, RED_N_PIN                     ; turn red north off
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
+          
+          ret               ; return
+
+
+n_red_w_green:
+          sbi       NORTH, RED_N_PIN                     ; turn red north on
+          sbi       WEST, GREEN_W_PIN                   ; turn green west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow norht off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, RED_W_PIN                     ;turn red west off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+
+          ret                     ;return
+
+
+n_yellow_w_red:
+          sbi       NORTH, YELLOW_N_PIN                  ; turn yellow north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, RED_N_PIN                     ; turn red north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
+
+          ret      
+
+
+
+n_red_w_yellow:
+          sbi       NORTH, RED_N_PIN                     ; turn red north on
+          sbi       WEST, YELLOW_W_PIN                  ; turn yellow west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, RED_W_PIN                     ; turn red west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
+
+          ret       
+
+n_red_w_red:
+          sbi       NORTH, RED_N_PIN                     ; turn red north on
+          sbi       WEST, RED_W_PIN                     ; turn red west on
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
+          cbi       NORTH, GREEN_N_PIN                   ; turn green north off
+          cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
+          cbi       WEST, GREEN_W_PIN                   ; turn green west off
+
+          ret       
 
 
 
