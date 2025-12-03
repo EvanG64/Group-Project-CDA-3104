@@ -9,7 +9,7 @@
 ; declare constants and global variables
 ; ----------------------------------------------------------
                ; us  *  XTAL / scaler - 1
-.equ DELAY_MS = 100000 * (16 / 256.0) - 1
+.equ DELAY_MS = 90000 * (16 / 256.0) - 1
 
 .equ RED_N_PIN = PB4
 .equ YELLOW_N_PIN = PB3
@@ -93,13 +93,13 @@ main:
 main_loop:
 
 ; ----------------------------------------------------------
-          ldi       r16, 10
+          ldi       r16, 25
           call      n_red_w_red
           call      n_cross_red
           call      w_cross_red
           call      delay_lp
 ; ----------------------------------------------------------
-          ldi       r16, 30
+          ldi       r16, 75
           call      n_green_w_red
           tst       crossWFlag
           breq      no_w_cross_white_1
@@ -107,7 +107,7 @@ main_loop:
 no_w_cross_white_1:
           call      delay_lp
 ; ----------------------------------------------------------
-          ldi       r16, 10
+          ldi       r16, 25
           call      n_yellow_w_red
           tst       crossWFlag
           breq      no_w_cross_white_2
@@ -116,13 +116,13 @@ no_w_cross_white_2:
           call      delay_lp
           ldi       crossWFlag, 0
 ; ----------------------------------------------------------
-          ldi       r16, 10
+          ldi       r16, 25
           call      n_red_w_red
           call      n_cross_red
           call      w_cross_red
           call      delay_lp
 ; ----------------------------------------------------------
-          ldi       r16, 30
+          ldi       r16, 75
           call      n_red_w_green
           tst       crossNFlag
           breq      no_n_cross_white_1
@@ -130,7 +130,7 @@ no_w_cross_white_2:
 no_n_cross_white_1:
           call      delay_lp
 ; ----------------------------------------------------------
-          ldi       r16, 10
+          ldi       r16, 25
           call      n_red_w_yellow
           tst       crossNFlag
           breq      no_n_cross_white_2
@@ -154,6 +154,20 @@ delay_lp:                               ; do {
           
 
           call      delay
+
+          cpi       r16, 10
+          brge      no_blink_white
+
+          sbic      WEST, YELLOW_W_PIN
+          call      n_cross_white_blink
+          sbic      NORTH, YELLOW_N_PIN
+          call      w_cross_white_blink
+
+
+
+
+
+no_blink_white:
 
           dec       r16                 ;   --r16
           brne      delay_lp            ; } while (r16 > 0);
@@ -214,6 +228,11 @@ n_cross_white:
           sbi       NORTH, CROSS_WHITE_N_PIN
           cbi       NORTH, CROSS_RED_N_PIN
           ret
+n_cross_white_off:  
+          cbi       NORTH, CROSS_WHITE_N_PIN
+          ret
+
+
 w_cross_red:
           sbi       WEST, CROSS_RED_W_PIN
           cbi       WEST, CROSS_WHITE_W_PIN
@@ -221,6 +240,44 @@ w_cross_red:
 w_cross_white:
           sbi       WEST, CROSS_WHITE_W_PIN
           cbi       WEST, CROSS_RED_W_PIN
+          ret
+w_cross_white_off:  
+          cbi       WEST, CROSS_WHITE_W_PIN
+          ret
+
+
+n_cross_white_blink:
+          sbic      NORTH, CROSS_WHITE_N_PIN
+          rjmp      n_cross_white_blink_1
+          tst       crossNFlag
+          breq      n_cross_white_blink_end
+          call      n_cross_white
+          rjmp      n_cross_white_blink_end
+
+n_cross_white_blink_1:
+          tst       crossNFlag
+          breq      n_cross_white_blink_end
+          call      n_cross_white_off
+
+n_cross_white_blink_end:
+          ret
+
+
+
+w_cross_white_blink:
+          sbic      WEST, CROSS_WHITE_W_PIN
+          rjmp      w_cross_white_blink_1
+          tst       crossWFlag
+          breq      w_cross_white_blink_end
+          call      w_cross_white
+          rjmp      w_cross_white_blink_end
+
+w_cross_white_blink_1:
+          tst       crossWFlag
+          breq      w_cross_white_blink_end
+          call      w_cross_white_off
+
+w_cross_white_blink_end:
           ret
 
 
@@ -245,9 +302,9 @@ n_green_w_red:
 n_red_w_green:
           sbi       NORTH, RED_N_PIN                     ; turn red north on
           sbi       WEST, GREEN_W_PIN                   ; turn green west on
-          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow norht off
+          cbi       NORTH, YELLOW_N_PIN                  ; turn yellow north off
           cbi       NORTH, GREEN_N_PIN                   ; turn green north off
-          cbi       WEST, RED_W_PIN                     ;turn red west off
+          cbi       WEST, RED_W_PIN                     ; turn red west off
           cbi       WEST, YELLOW_W_PIN                  ; turn yellow west off
 
           ret                     ;return
