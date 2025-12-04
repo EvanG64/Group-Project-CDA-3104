@@ -9,7 +9,7 @@
 ; declare constants and global variables
 ; ----------------------------------------------------------
                ; us  *  XTAL / scaler - 1
-.equ DELAY_MS = 90000 * (16 / 256.0) - 1          ; setting delay
+.equ DELAY_MS = 90000 * (16 / 256.0) - 1          ; setting delay for 90 ms
 
 
 ; ----------------------------------------------------------
@@ -105,7 +105,7 @@ main_loop:
 
 ; ----------------------------------------------------------
 ; all red
-          ldi       r16, 25
+          ldi       r16, 25             ; all lights red for 2.25 seconds
           call      n_red_w_red
           call      n_cross_red
           call      w_cross_red
@@ -113,26 +113,26 @@ main_loop:
 ; ----------------------------------------------------------
 ; north road is green, west red, and crosswalk on west is on
 ; if it was called
-          ldi       r16, 75
+          ldi       r16, 75             ; north green for 6.75 seconds and west is red
           call      n_green_w_red
-          tst       crossWFlag
-          breq      no_w_cross_white_1
-          call      w_cross_white
+          tst       crossWFlag          ; testin the flag
+          breq      no_w_cross_white_1  ; if crosswalk not called, dont turn it on
+          call      w_cross_white       ; otherwise, turn it on                           
 no_w_cross_white_1:
           call      delay_lp
 ; ----------------------------------------------------------
 ; preparing to stop
-          ldi       r16, 25
-          call      n_yellow_w_red
-          tst       crossWFlag
-          breq      no_w_cross_white_2
-          call      w_cross_white
+          ldi       r16, 25             ; north is yellow for 2.25 seconds
+          call      n_yellow_w_red      ; and crosswalk starts blinking at last 0.9 seconds
+          tst       crossWFlag          ; testin the flag
+          breq      no_w_cross_white_2  ; if crosswalk not called, dont turn it on
+          call      w_cross_white       ; otherwise, turn it on                           
 no_w_cross_white_2:
           call      delay_lp
-          ldi       crossWFlag, 0
+          ldi       crossWFlag, 0       ; set the west crosswalk flag to false, no matter if it was used or not
 ; ----------------------------------------------------------
 ; all red
-          ldi       r16, 25
+          ldi       r16, 25             ; all lights red for 2.25 seconds
           call      n_red_w_red
           call      n_cross_red
           call      w_cross_red
@@ -140,23 +140,23 @@ no_w_cross_white_2:
 ; ----------------------------------------------------------
 ; north road is red, west green, and crosswalk on north is on
 ; if it was called
-          ldi       r16, 75
+          ldi       r16, 75             ; west green for 6.75 seconds and north is red
           call      n_red_w_green
-          tst       crossNFlag
-          breq      no_n_cross_white_1
-          call      n_cross_white
+          tst       crossNFlag          ; testin the flag
+          breq      no_n_cross_white_1  ; if crosswalk not called, dont turn it on
+          call      n_cross_white       ; otherwise, turn it on                           
 no_n_cross_white_1:
           call      delay_lp
 ; ----------------------------------------------------------
 ; preparing to stop
-          ldi       r16, 25
-          call      n_red_w_yellow
-          tst       crossNFlag
-          breq      no_n_cross_white_2
-          call      n_cross_white
+          ldi       r16, 25             ; west is yellow for 2.25 seconds
+          call      n_red_w_yellow      ; and crosswalk starts blinking at last 0.9 seconds
+          tst       crossNFlag          ; testin the flag
+          breq      no_n_cross_white_2  ; if crosswalk not called, dont turn it on
+          call      n_cross_white       ; otherwise, turn it on                           
 no_n_cross_white_2:
           call      delay_lp
-          ldi       crossNFlag, 0
+          ldi       crossNFlag, 0       ; set the west crosswalk flag to false, no matter if it was used or not
 ; ----------------------------------------------------------
 
 end_main:
@@ -169,7 +169,7 @@ end_main:
 ; this loop handles delay and croswalk blinking if needed
 
 delay_lp:                               ; do {
-          call      delay               ; calling delay of 0.09 ms
+          call      delay               ; calling delay of 90 ms
 
           cpi       r16, 10             ; more than halfway through yellow light, start blinking on crosswalk
           brge      no_blink_white      
@@ -187,7 +187,7 @@ no_blink_white:
 
 
 ; ----------------------------------------------------------
-; delay, which is set as 0.09 ms at the very top
+; delay, which is set as 90 ms at the very top
 delay:
           ; Load TCNT1H:TCNT1L with initial count
           clr       r20
@@ -292,16 +292,16 @@ n_cross_white_off:
 
 
 w_cross_red:
-          sbi       WEST, CROSS_RED_W_PIN
-          cbi       WEST, CROSS_WHITE_W_PIN
-          ret
+          sbi       WEST, CROSS_RED_W_PIN         ; turn red west cross on
+          cbi       WEST, CROSS_WHITE_W_PIN       ; turn white west cross off
+          ret       ; w_cross_red
 w_cross_white:
-          sbi       WEST, CROSS_WHITE_W_PIN
-          cbi       WEST, CROSS_RED_W_PIN
-          ret
+          sbi       WEST, CROSS_WHITE_W_PIN       ; turn white west cross on
+          cbi       WEST, CROSS_RED_W_PIN         ; turn red west cross off
+          ret       ; w_cross_white
 w_cross_white_off:  
-          cbi       WEST, CROSS_WHITE_W_PIN
-          ret
+          cbi       WEST, CROSS_WHITE_W_PIN       ; just turn off white on west cross
+          ret       ; w_cross_white_off
 
 
 ; ----------------------------------------------------------
@@ -310,38 +310,38 @@ w_cross_white_off:
 ; When white on, turn it off, when white off, turn it on
 
 n_cross_white_blink:
-          sbic      NORTH, CROSS_WHITE_N_PIN
-          rjmp      n_cross_white_blink_1
-          tst       crossNFlag
-          breq      n_cross_white_blink_end
-          call      n_cross_white
-          rjmp      n_cross_white_blink_end
+          sbic      NORTH, CROSS_WHITE_N_PIN      ; skip if white is off on north crosswalk
+          rjmp      n_cross_white_blink_1         ; if it is on, jump to turn it off
+          tst       crossNFlag                    ; testing flag if it is off
+          breq      n_cross_white_blink_end       ; if crosswalk was not called, there is nothing to blink
+          call      n_cross_white                 ; otherwise, turn it on, if it is off
+          rjmp      n_cross_white_blink_end       ; done
 
 n_cross_white_blink_1:
-          tst       crossNFlag
-          breq      n_cross_white_blink_end
-          call      n_cross_white_off
+          tst       crossNFlag                    ; testing flag
+          breq      n_cross_white_blink_end       ; if crosswalk was not called, no need to turn it off
+          call      n_cross_white_off             ; otherwise turn it off for next blinking stage
 
 n_cross_white_blink_end:
-          ret
+          ret       ; n_cross_white_blink
 
 
 
 w_cross_white_blink:
-          sbic      WEST, CROSS_WHITE_W_PIN
-          rjmp      w_cross_white_blink_1
-          tst       crossWFlag
-          breq      w_cross_white_blink_end
-          call      w_cross_white
-          rjmp      w_cross_white_blink_end
+          sbic      WEST, CROSS_WHITE_W_PIN       ; skip if white is off on west crosswalk
+          rjmp      w_cross_white_blink_1         ; if it is on, jump to turn it off
+          tst       crossWFlag                    ; testing flag if it is off
+          breq      w_cross_white_blink_end       ; if crosswalk was not called, there is nothing
+          call      w_cross_white                 ; otherwise, turn it on, if it is off
+          rjmp      w_cross_white_blink_end       ; done
 
 w_cross_white_blink_1:
-          tst       crossWFlag
-          breq      w_cross_white_blink_end
-          call      w_cross_white_off
+          tst       crossWFlag                    ; testing flag
+          breq      w_cross_white_blink_end       ; if crosswalk was not called, no need to turn 
+          call      w_cross_white_off             ; otherwise turn it off for next blinking stage
 
 w_cross_white_blink_end:
-          ret
+          ret       ; w_cross_white_blink
 
 ; ----------------------------------------------------------
 
